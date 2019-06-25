@@ -1,2 +1,2 @@
 python-telegram-bot
-mysqlite3
+pysqlite3
