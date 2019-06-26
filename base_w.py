@@ -211,3 +211,22 @@ def clear_stat():
     cursor.close()
     conn.close()
 
+def upgrade_admin(username, nick_name):
+    conn = sqlite3.connect('base.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE admins SET pro_admin=:pro_admin WHERE username=:username AND nick_name=:nick_name',
+                   {'nick_name': nick_name, 'username': username, 'pro_admin': 'on'})
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def is_pro_admin(id):
+    conn = sqlite3.connect('base.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT pro_admin FROM admins WHERE id=:id', {'id':id})
+    all_users = cursor.fetchone()
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return  str(all_users)

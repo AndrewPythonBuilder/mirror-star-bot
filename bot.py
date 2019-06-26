@@ -6,7 +6,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageH
 import datetime
 
 
-add = delete_a = robber_t = disc = ph = telegr = discr = mosh = call_c = money = mailing = False
+add = delete_a = robber_t = disc = ph = telegr = discr = mosh = call_c = money = mailing = upgr = False
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -43,16 +43,16 @@ def start(bot,update):
 
 def answer_questions(bot, update):
     message = update.message
-    if message.chat.id in constants.admins:
+    if (message.chat.id in constants.admins) or (base_w.is_pro_admin(message.chat.id) == 'on'):
         #----------------------------------admins--------------------------------
-        global add, delete_a, robber_t,disc, ph, telegr, mailing
+        global add, delete_a, robber_t,disc, ph, telegr, mailing, upgr
         if message.text == 'Модераторы':
-            buttons = [['Добавить модератора','Список модераторов','Удалить модератора'],['Домой']]
+            buttons = [['Добавить модератора','Список модераторов','Удалить модератора'],['Upgrade модератора✅'],['Домой']]
             keyboard = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
             bot.send_message(message.chat.id, 'Выберите действие', reply_markup=keyboard)
 
         elif message.text == 'Домой' or message.text == 'Отмена':
-            add = delete_a = robber_t =disc = ph = telegr =mailing = False
+            add = delete_a = robber_t =disc = ph = telegr =mailing = upgr = False
             base_w.delete_none_users()
             buttons = [['Добавить мошенника', 'Модераторы'], ['Статистика', 'Рассылка']]
             keyboard = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
@@ -200,9 +200,31 @@ def answer_questions(bot, update):
                 except:
                     pass
 
+        elif message.text == 'Upgrade модератора✅':
+            list_of_admins = base_w.all_admins()
+            buttons = []
+            for i in list_of_admins:
+                button = [i]
+                buttons.append(button)
+            buttons.append(['Домой'])
+            keyboard = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
+            bot.send_message(message.chat.id, 'Выберите модератора, которого хотите обрадовать, он скоро станет.. админом!', reply_markup=keyboard)
+            upgr = True
+
+        elif upgr == True:
+            upgr = False
+            a = message.text.split('  ')
+            try:
+                base_w.upgrade_admin(a[0], a[1])
+                bot.send_message(message.chat.id, 'Модератор удален')
+                message.text = 'Домой'
+                answer_questions(bot, update)
+            except:
+                pass
+
 
     #------------------------------------------moderators---------
-    elif message.chat.id in base_w.ids_admins():
+    elif (message.chat.id in base_w.ids_admins()) and (base_w.is_pro_admin(message.chat.id) == 'off'):
         if message.text == 'Домой' or message.text == 'Отмена':
             add = delete_a = robber_t = disc = ph = telegr = False
             base_w.delete_none_users()
