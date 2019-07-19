@@ -6,7 +6,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageH
 import datetime
 
 
-add = delete_a = robber_t = disc = ph = telegr = discr = mosh = call_c = money = mailing = upgr = False
+add = delete_a = robber_t = disc = ph = telegr = discr = mosh = call_c = money = mailing = upgr = mosho = False
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -22,7 +22,7 @@ def start(bot,update):
     global add, delete_a, robber_t, disc, ph, telegr, discr , mosh , call_c , money,mailing
     if message.chat.id in constants.admins:
         base_w.delete_none_users()
-        add = delete_a = robber_t = disc = ph = telegr = mailing = False
+        add = delete_a = robber_t = disc = ph = telegr = mailing = mosho = False
         buttons = [['Добавить мошенника','Модераторы'],['Статистика','Рассылка']]
         keyboard = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
         bot.send_message(message.chat.id, 'Привет, кого на этот раз разоблачим?', reply_markup=keyboard)
@@ -306,14 +306,14 @@ def answer_questions(bot, update):
     # ------------------------------------------moderators---------
     # ------------------------------------------users--------------
     else:
-        global discr, mosh, money, call_c
+        global discr, mosh, money, call_c, mosho
         if message.text == 'Поиск мошенника🔍':
             buttons = [[InlineKeyboardButton('Поиск мошенника🔍',switch_inline_query_current_chat = '')]]
             keyboard = InlineKeyboardMarkup(buttons)
             bot.send_message(message.chat.id, 'Для продолжения нажмите на кнопку\n'+texts.search_t, reply_markup=keyboard)
         elif message.text == 'Домой' or  message.text == 'Отмена':
             base_w.statistics_plus(message.chat.id)
-            discr = mosh = money = call_c =False
+            discr = mosh = money = call_c =mosho = False
             buttons = [['Поиск мошенника🔍', 'Список мошенников🕵‍♂🕵‍♂🕵‍♂'],
                        ['Добавить мошенника🕵‍♂', 'Заказать возврат денег💲'], ['Связаться с нами📞']]
             keyboard = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
@@ -334,16 +334,43 @@ def answer_questions(bot, update):
         elif message.text == 'Добавить мошенника🕵‍♂':
             buttons = [['Домой']]
             keyboard = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
-            bot.send_message(message.chat.id, 'Перешлите сообщение мошенника в чат с ботом для определения ID (если есть)',
+            bot.send_message(message.chat.id, '✅Перешлите сообщение мошенника в чат с ботом для определения ID или сам ID цифрами. ',
                              reply_markup=keyboard)
-            buttons = [[InlineKeyboardButton('Нет смс от мошенника', callback_data='Нет смс от мошенника')]]
+            buttons = [[InlineKeyboardButton('❌Нет ID/смс от мошенника❌', callback_data='Нет смс от мошенника')]]
             reply_markup = InlineKeyboardMarkup(buttons)
-            bot.send_message(message.chat.id, 'Если не можете, то нажмите на кнопку "Нет смс от мошенника"',
+            bot.send_message(message.chat.id, 'Есть нету ни того, ни другого, нажмите на кнопку: "Нет ID/смс мошенника"',
                              reply_markup=reply_markup)
             mosh = True
 
         elif mosh == True:
             mosh = False
+            try:
+                for i in base_w.ids_admins():
+                    try:
+                        bot.forward_message(chat_id=i, from_chat_id=message.chat.id, disable_notification=False,
+                                            message_id=message.message_id)
+                    except:
+                        pass
+                for i in constants.admins:
+                    try:
+                        bot.forward_message(chat_id=i, from_chat_id=message.chat.id, disable_notification=False,
+                                            message_id=message.message_id)
+                    except:
+                        pass
+                buttons = [[InlineKeyboardButton('❌Нет юзернейма❌', callback_data='Нет юзернейма')]]
+                reply_markup = InlineKeyboardMarkup(buttons)
+                textw = '✅Пришлите юзернейм мошенника (если есть). Если его нет, нажмите на кнопку: "Нет юзернейма"'
+                bot.send_message(message.chat.id, textw, reply_markup=reply_markup)
+                mosho = True
+            except:
+                bot.send_message(message.chat.id,
+                                 'Произошла ошибка, попробуйте еще раз с самого начала. Убедитесь в правильности данных')
+                message.text = 'Домой'
+                answer_questions(bot, update)
+
+
+        elif mosho == True:
+            mosho = False
             try:
                 for i in base_w.ids_admins():
                     try:
@@ -355,8 +382,8 @@ def answer_questions(bot, update):
                         bot.forward_message(chat_id=i, from_chat_id=message.chat.id, disable_notification=False, message_id=message.message_id)
                     except:
                         pass
-                textw = 'Желательно все в одном смс.  Наш модератор все проверит, добавит его в бота и выложит на канал.'
-                bot.send_message(message.chat.id, 'Пожалуйста, пришлите фото(если оно есть) с описанием мошенничества.'+ textw)
+                textw = '✅Пришлите подробное описание мошенничества в одном смс.'
+                bot.send_message(message.chat.id, texts.text_mosh+ textw)
                 discr = True
             except:
                 bot.send_message(message.chat.id,
@@ -543,13 +570,16 @@ def button_ans(bot, update):
                                   reply_markup=keyboard)
 
     elif str(query.data) == 'Нет смс от мошенника':
-        global mosh,discr
-        mosh = False
+        global mosh,mosho
+        mosh = True
+        update.message.text = 'Нет ID'
+        answer_questions(bot,update)
 
-        textw = 'Чтобы добавить мошенника, пришли его имя, юзернейм (если есть), описание мошенничества и пруфы в виде фото. Желательно все в одном смс.  Наш модератор все проверит, добавит его в бота и выложит на канал.'
-        bot.send_message(query.message.chat.id, textw)
+    elif str(query.data) == 'Нет юзера от мошенника':
+        global discr, mosho
+        mosho = False
         discr = True
-
+        answer_questions(bot, update)
 
 def daily_job(bot, update, job_queue):
     t = datetime.time(00,00,00,00)
