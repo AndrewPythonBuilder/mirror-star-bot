@@ -572,7 +572,6 @@ def button_ans(bot, update):
     elif str(query.data) == 'Нет смс от мошенника':
         global mosh,mosho
         mosh = True
-        update.message.text = 'Нет ID'
         answer_questions(bot,update)
 
     elif str(query.data) == 'Нет юзера от мошенника':
