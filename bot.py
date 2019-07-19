@@ -576,11 +576,14 @@ def button_ans(bot, update):
         keyboard = ReplyKeyboardMarkup(buttons)
         bot.send_message(query.message.chat.id, 'Подтвердите...', reply_markup=keyboard)
 
-    elif str(query.data) == 'Нет юзера от мошенника':
+        elif str(query.data) == 'Нет юзера от мошенника':
         global discr, mosho
         mosho = False
         discr = True
-        answer_questions(bot, update)
+        buttons = [['❌Нет юзернейма мошенника❌']]
+        keyboard = ReplyKeyboardMarkup(buttons)
+        bot.send_message(query.message.chat.id, 'Подтвердите...', reply_markup=keyboard)
+   
 
 def daily_job(bot, update, job_queue):
     t = datetime.time(00,00,00,00)
