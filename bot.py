@@ -357,7 +357,7 @@ def answer_questions(bot, update):
                                             message_id=message.message_id)
                     except:
                         pass
-                buttons = [[InlineKeyboardButton('❌Нет юзернейма❌', callback_data='Нет юзернейма')]]
+                buttons = [[InlineKeyboardButton('❌Нет юзернейма❌', callback_data='Нет юзера от мошенника')]]
                 reply_markup = InlineKeyboardMarkup(buttons)
                 textw = '✅Пришлите юзернейм мошенника (если есть). Если его нет, нажмите на кнопку: "Нет юзернейма"'
                 bot.send_message(message.chat.id, textw, reply_markup=reply_markup)
