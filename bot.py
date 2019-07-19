@@ -569,10 +569,12 @@ def button_ans(bot, update):
             bot.edit_message_text(message_id=query.message.message_id, chat_id=query.message.chat.id, text=strim,
                                   reply_markup=keyboard)
 
-    elif str(query.data) == 'Нет смс от мошенника':
+    if str(query.data) == 'Нет смс от мошенника':
         global mosh,mosho
         mosh = True
-        answer_questions(bot,update)
+        buttons = [['❌Нет ID/смс от мошенника❌']]
+        keyboard = ReplyKeyboardMarkup(buttons)
+        bot.send_message(query.message.chat.id, 'Подтвердите...', reply_markup=keyboard)
 
     elif str(query.data) == 'Нет юзера от мошенника':
         global discr, mosho
