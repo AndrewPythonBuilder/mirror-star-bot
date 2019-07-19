@@ -575,8 +575,8 @@ def button_ans(bot, update):
         buttons = [['❌Нет ID/смс от мошенника❌']]
         keyboard = ReplyKeyboardMarkup(buttons)
         bot.send_message(query.message.chat.id, 'Подтвердите...', reply_markup=keyboard)
-
-        elif str(query.data) == 'Нет юзера от мошенника':
+    
+    elif str(query.data) == 'Нет юзера от мошенника':
         global discr, mosho
         mosho = False
         discr = True
